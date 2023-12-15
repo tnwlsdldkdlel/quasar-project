@@ -1,1 +1,36 @@
-/* app global css */
+.q-field__control {
+  color: #4caf50;
+}
+
+.error {
+  color : red !important;
+  text-align: center;
+}
+
+a {
+  text-decoration-line: none;
+  color: grey;
+}
+
+.login-btn {
+  background : #4caf50;
+}
+
+.join-btn {
+  background : #4caf50;
+}
+
+.join-container {
+  padding: 5%;
+}
+
+.login-container {
+  padding: 15%;
+}
+
+.idpwjoinBtn {
+  text-align : center;
+  padding-bottom : 0%;
+  padding: 16px 16px;
+  padding-bottom : 0px;
+}

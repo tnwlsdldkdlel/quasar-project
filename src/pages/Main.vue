@@ -183,9 +183,7 @@
             </div>
           </q-card>
           <!-- 쇼핑-->
-          <q-card style="top: 5%;">
-            쇼핑~
-          </q-card>
+          <q-card style="top: 5%"> 쇼핑~ </q-card>
         </div>
         <div style="width: 2%"></div>
         <div style="width: 28%">
@@ -195,14 +193,17 @@
               <div style="text-align: center; padding-bottom: 3%">
                 네이버를 더 안전하고 편리하게 이용하세요
               </div>
-              <q-btn color="primary" label="Primary" />
-              <div
-                class="q-pa-md"
-                style="text-align: center; padding-bottom: 0%"
-              >
-                <a href="http://"> 아이디찾기</a> |
-                <a href="http://"> 비밀번호찾기</a> |
-                <a href="http://"> 회원가입</a>
+              <q-btn
+                class="login-btn"
+                label="로그인"
+                @click="clickMove('login')"
+              />
+              <div class="idpwjoinBtn">
+                <a href="http://"> 아이디찾기</a>
+                |
+                <a href="http://"> 비밀번호찾기</a>
+                |
+                <a href="/join"> 회원가입</a>
               </div>
             </q-card-section>
           </q-card>
@@ -210,10 +211,8 @@
           <q-card style="top: 5%">
             <q-img src="https://picsum.photos/500/300" :ratio="16 / 9" />
           </q-card>
-           <!-- 날씨 -->
-          <q-card style="top: 10%">
-           날씨~
-          </q-card>
+          <!-- 날씨 -->
+          <q-card style="top: 10%"> 날씨~ </q-card>
         </div>
       </q-item>
     </div>
@@ -222,17 +221,56 @@
 
 <script>
 import { ref } from "vue";
+import { useUserStore } from "stores/user";
+import axios from "axios";
+import COMMON from "../common/common.js";
+import { useQuasar } from "quasar";
 
 export default {
   setup() {
+    const store = useUserStore();
+    const q = useQuasar();
+
     const model_search = ref("");
 
+    // 회원정보 가져오기
+    const token = store.userToken;
+    if (!COMMON.isEmpty(token)) {
+      const url = "/v1/user/info/" + token;
+
+      axios
+        .get(url)
+        .then((res) => {
+          if (res.data.result == "expiredToken") {
+            store.userToken = null;
+
+            q.dialog({
+              title: "로그인 만료",
+              message: "로그인 만료되어 다시 로그인페이지로 이동합니다.",
+            }).onOk(() => {
+              location.href = "/login";
+            });
+          }
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+    }
+
     return {
+      store,
+      q,
+
       model_search,
       slide: ref("style"),
       lorem:
         "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Itaque voluptatem totam, architecto cupiditate officia rerum, error dignissimos praesentium libero ab nemo.",
     };
+  },
+  methods: {
+    clickMove(path) {
+      location.href = "/" + path;
+    },
   },
 };
 </script>
