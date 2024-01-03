@@ -1,72 +1,126 @@
 <template>
   <div class="q-pa-md">
-    <div>
-      <q-item class="blog-q-item">
-        <div>
-          {{ user_info.name }} <br />
-          {{ user_info.id }}
-          {{  blog_info }}
+    <q-item class="myblog-q-item">
+      <div style="width: 28%">
+        <div class="q-pa-m q-gutter-sm">
+          <q-img
+            src="../../images/default_profile.png"
+            style="max-width: 60px; height: 60px; float: left"
+          />
+          <div class="q-pa-m q-gutter-sm">
+            <a class="text-black">
+              <b>{{ user_info.name }}</b>
+            </a>
+            <br />
+            <span style="color: gray">{{ user_info.id }}</span>
+            <br />
+            <span
+              >{{ blog_info.profile }}
+              <q-btn
+                outline
+                rounded
+                label="EDIT"
+                style="color: grey"
+                size="xs"
+                @click="clickLogout"
+            /></span>
+            <br />
+            <div style="padding-top: 2%">
+              <div style="cursor: pointer; width: fit-content">
+                <q-icon name="edit" /><a
+                  class="text-black"
+                  @click="clickBlogWrite"
+                >
+                  글쓰기
+                </a>
+                &nbsp;
+                <q-icon name="settings" /><a
+                  class="text-black"
+                  @click="clickBlogWrite"
+                >
+                  관리
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-      </q-item>
-    </div>
+      </div>
+      <div style="width: 30%">
+        <div
+          style="cursor: pointer"
+          @click="clickCategoryExpand"
+          v-if="category_expend"
+        >
+          <b>category</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <q-icon name="expand_less" />
+        </div>
+        <div
+          style="cursor: pointer"
+          @click="clickCategoryExpand"
+          v-if="!category_expend"
+        >
+          <b>category</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <q-icon name="expand_more" />
+        </div>
+        <div style="padding-top: 3%" v-if="category_expend">
+          <div style="padding-bottom: 2%">
+            <q-icon name="article" />
+            전체보기(0)
+          </div>
+          <div v-for="item in category" :key="item">
+            <q-icon name="article" />
+            {{ item }} (0)
+          </div>
+        </div>
+      </div>
+    </q-item>
+    <q-item class="myblog-q-item"> <b>전체보기</b>&nbsp;0개의 글 </q-item>
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
 import { useUserStore } from "stores/user";
+import { useBlogStore } from "stores/blog";
 import COMMON from "../../common/common.js";
 import { useQuasar } from "quasar";
 import axios from "axios";
+import LoginVue from "../User/Login.vue";
 
 export default {
   setup() {
     const user_store = useUserStore();
+    const blog_store = useBlogStore();
     const q = useQuasar();
 
-    const model_search = ref("");
-    const model_blog_info_tab = ref("my");
     var user_info = {};
-    var is_login = false;
-    var my_blog_path = "";
     var blog_info = {};
+    var category = ref({});
+    const category_expend = ref(true);
 
-    if (!COMMON.isEmpty(user_store.info)) {
+    if (!COMMON.isEmpty(blog_store.info) && !COMMON.isEmpty(user_store.info)) {
+      blog_info = JSON.parse(COMMON.setAESDecodnig(blog_store.info));
       user_info = JSON.parse(COMMON.setAESDecodnig(user_store.info));
-      is_login = true;
 
-      // 로그인했으면 블로그 정보 가져오기
-      async function getBlogInfo() {
-        const url = "/v1/blog/info/" + token;
-        const q = useQuasar();
-
-        await axios.get(url).then((res) => {
-          if (res.data.result == "success") {
-            blog_info = res.data.data.blogInfo;
-          }
-        });
-      }
+      category = ref(blog_info.category);
     }
 
     return {
       user_store,
       q,
 
-      is_login,
       user_info,
-      model_search,
-      model_blog_info_tab,
-      my_blog_path,
-      blog_info
+      blog_info,
+      category,
+      category_expend,
     };
   },
   methods: {
-    clickMove(path) {
-      location.href = "/" + path;
+    clickCategoryExpand() {
+      this.category_expend = this.category_expend == true ? false : true;
     },
-    clickLogout() {
-      this.user_store.delete();
-      location.href = "/user/login";
+    clickBlogWrite() {
+      location.href = "/blog/" + this.user_info.id + "/write";
     },
   },
 };

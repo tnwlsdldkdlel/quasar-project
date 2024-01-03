@@ -56,12 +56,14 @@
 <script>
 import { defineComponent } from "vue";
 import { useUserStore } from "stores/user";
+import { useBlogStore } from "stores/blog";
 import COMMON from "../../common/common.js";
 import { ref } from "vue";
 
 export default defineComponent({
   setup() {
     const user_store = useUserStore();
+    const blog_store = useBlogStore();
     const token = user_store.token;
 
     const model_target = ref("글");
@@ -76,6 +78,27 @@ export default defineComponent({
       COMMON.checkUserToken(token);
       user_info = JSON.parse(COMMON.setAESDecodnig(user_store.info));
       is_login = true;
+    } else {
+      location.href = "/";
+    }
+
+    // 로그인하고, blog info가 로컬스토리지에 없는 경우
+    if (!COMMON.isEmpty(user_store.info) && COMMON.isEmpty(blog_store.info)) {
+      getBlogInfo();
+
+      // 로그인했으면 블로그 정보 가져오기
+      async function getBlogInfo() {
+        const url = "/v1/blog/info/" + user_store.token;
+        const q = useQuasar();
+
+        await axios.get(url).then((res) => {
+          if (res.data.result == "success") {
+            blog_store.info = COMMON.setAESEncodnig(
+              JSON.stringify(res.data.data.blogInfo)
+            );
+          }
+        });
+      }
     }
 
     return {

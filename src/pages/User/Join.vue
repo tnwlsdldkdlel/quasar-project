@@ -222,7 +222,7 @@ export default {
           .then((res) => {
             if (res.data.result == "success") {
               this.user_store.token = res.data.data.token;
-              this.user_store.info = COMMON.setAESEncodnig(JSON.stringify(res.data.data.user_info));
+              this.user_store.info = COMMON.setAESEncodnig(JSON.stringify(res.data.data.userInfo));
 
               this.q.dialog({
                 title: "회원가입 완료",

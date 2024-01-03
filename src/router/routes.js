@@ -22,7 +22,7 @@ const routes = [
       { path: 'user/findId', component: FindId },
 
       { path: 'blog', component: Blog, meta: { layout: BlogLayout } },
-      { path: 'blog/:user_id', component: MyBlog, meta: { layout: MyBlogLayout }}
+      { path: 'blog/:user_id', component: MyBlog}
     ],
   },
 

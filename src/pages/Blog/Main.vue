@@ -144,7 +144,8 @@ export default {
       location.href = "/" + path;
     },
     clickLogout() {
-      this.user_store.delete();
+      localStorage.removeItem("user_info");
+      localStorage.removeItem("user_token");
       location.href = "/user/login";
     },
   },
