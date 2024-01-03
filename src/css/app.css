@@ -28,9 +28,83 @@ a {
   padding: 15%;
 }
 
-.idpwjoinBtn {
+.idpwjoin-btn {
   text-align : center;
-  padding-bottom : 0%;
   padding: 16px 16px;
   padding-bottom : 0px;
+}
+
+.mailcafeblogpay-btn {
+  text-align : center;
+  padding:unset;
+}
+
+.mailcafeblogpay-btn a {
+  color: black;
+  font-weight: bold;
+  font-size: medium;
+  text-align: center;
+}
+
+.logout-btn {
+  float: right;
+  margin-top: 0px;
+  color: grey !important;
+}
+
+.default-color {
+  color: #4caf50;
+}
+
+.mailcafelogpay {
+  border-top-left-radius : unset;
+  border-top-right-radius : unset;
+}
+
+.login-after {
+  border-bottom-left-radius : unset;
+  border-bottom-right-radius : unset;
+}
+
+.blog-tab {
+  place-self:flex-end;
+  width:29%;
+}
+
+.q-tab--active {
+  font-weight: bold;
+  color: #4caf50 !important;
+}
+
+.q-tab__indicator {
+  color: #4caf50 !important;
+}
+
+.q-tabs__content {
+  position: fixed;
+}
+
+.blog-q-item {
+  padding-right: 0%;
+  padding-top: 2%;
+}
+
+.myblogwrite-card {
+  border-bottom-left-radius : unset;
+  border-bottom-right-radius : unset;
+}
+
+.myblogwrite-btn {
+  text-align : center;
+  background-color: #4caf50;
+  color: white;
+}
+
+ .myblogwrite-btn a {
+  color: white;
+}
+
+.myblog-info-card {
+  border-top-left-radius : unset;
+  border-top-right-radius : unset;
 }

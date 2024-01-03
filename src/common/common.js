@@ -1,4 +1,6 @@
 import CryptoJS from "crypto-js";
+import axios from "axios";
+import { useQuasar } from "quasar";
 
 export default {
   isEmpty(value) {
@@ -165,5 +167,42 @@ export default {
     }
 
     return result_config;
-  }
+  },
+
+  async checkUserToken(token) {
+    const url = "/v1/user/info/" + token;
+    const q = useQuasar();
+
+    await axios
+      .get(url)
+      .then((res) => {
+        if (res.data.result == "expiredToken") {
+          user_store.delete();
+
+          q.dialog({
+            title: "로그인 만료",
+            message: "로그인 만료되어 다시 로그인페이지로 이동합니다.",
+          }).onOk(() => {
+            location.href = "/user/login";
+          });
+        }
+      })
+  },
+
+  setAESDecodnig(value) {
+    if (!this.isEmpty(value)) {
+      const key = CryptoJS.enc.Utf8.parse("test1324");
+      const decrypted = CryptoJS.AES.decrypt(value, key, {
+        iv: CryptoJS.enc.Utf8.parse(""),
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      });
+
+      return decrypted.toString(CryptoJS.enc.Utf8);
+    } else {
+      return "";
+    }
+
+  },
+
 }

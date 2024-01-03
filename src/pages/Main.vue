@@ -29,7 +29,7 @@
         <div class="q-pa-m q-gutter-sm">
           <q-btn round color="primary" icon="shopping_cart" />
           <q-btn round color="primary" icon="shopping_cart" />
-          <q-btn round color="primary" icon="shopping_cart" />
+          <q-btn round class="default-color" icon="note_alt" @click="clickMove('blog')"/>
           <q-btn round color="primary" icon="shopping_cart" />
           <q-btn round color="primary" icon="shopping_cart" />
           <q-btn round color="primary" icon="shopping_cart" />
@@ -188,22 +188,76 @@
         <div style="width: 2%"></div>
         <div style="width: 28%">
           <!-- 로그인 -->
-          <q-card>
+          <q-card v-if="!is_login">
             <q-card-section style="display: grid">
               <div style="text-align: center; padding-bottom: 3%">
-                네이버를 더 안전하고 편리하게 이용하세요
+                네이버를 더 안전하고 편리하게 이용하세요 {{ is_login }}
               </div>
               <q-btn
                 class="login-btn"
                 label="로그인"
-                @click="clickMove('login')"
+                @click="clickMove('user/login')"
               />
-              <div class="idpwjoinBtn">
-                <a href="http://"> 아이디찾기</a>
+              <div class="idpwjoin-btn">
+                <a href="/user/findId"> 아이디찾기</a>
                 |
                 <a href="http://"> 비밀번호찾기</a>
                 |
-                <a href="/join"> 회원가입</a>
+                <a href="/user/join"> 회원가입</a>
+              </div>
+            </q-card-section>
+          </q-card>
+          <!-- 계정정보 -->
+          <q-card class="login-after" v-if="is_login">
+            <q-card-section style="display: grid">
+              <div class="q-pa-m q-gutter-sm">
+                <q-img
+                  src="../images/default_profile.png"
+                  style="max-width: 60px; height: 60px; float: left"
+                />
+                <div class="q-pa-m q-gutter-sm">
+                  <a class="text-black">
+                    <b>{{ user_info.name }}</b>
+                  </a>
+                  <q-btn
+                    class="logout-btn"
+                    outline
+                    rounded
+                    color="primary"
+                    label="로그아웃"
+                    @click="clickLogout"
+                  >
+                    <q-icon name="logout" />
+                  </q-btn>
+                  <br />
+                  <span>{{ user_info.id }}</span>
+                  <br />
+                  <a class="text-black" href="http://"> 시작하기 </a> |
+                  <a class="text-black" href="http://">
+                    쪽지 <span class="default-color">0</span></a
+                  >
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+          <q-card class="mailcafelogpay" v-if="is_login">
+            <q-card-section style="display: grid">
+              <div class="mailcafeblogpay-btn">
+                <a
+                  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;메일&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a
+                >
+                |
+                <a
+                  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;카페&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a
+                >
+                |
+                <a
+                  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;블로그&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a
+                >
+                |
+                <a
+                  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;페이&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a
+                >
               </div>
             </q-card-section>
           </q-card>
@@ -222,45 +276,29 @@
 <script>
 import { ref } from "vue";
 import { useUserStore } from "stores/user";
-import axios from "axios";
 import COMMON from "../common/common.js";
 import { useQuasar } from "quasar";
 
 export default {
   setup() {
-    const store = useUserStore();
+    const user_store = useUserStore();
     const q = useQuasar();
 
     const model_search = ref("");
+    var user_info = {};
+    var is_login = false;
 
-    // 회원정보 가져오기
-    const token = store.userToken;
-    if (!COMMON.isEmpty(token)) {
-      const url = "/v1/user/info/" + token;
-
-      axios
-        .get(url)
-        .then((res) => {
-          if (res.data.result == "expiredToken") {
-            store.userToken = null;
-
-            q.dialog({
-              title: "로그인 만료",
-              message: "로그인 만료되어 다시 로그인페이지로 이동합니다.",
-            }).onOk(() => {
-              location.href = "/login";
-            });
-          }
-        })
-        .catch((res) => {
-          console.log(res);
-        });
+    if(!COMMON.isEmpty(user_store.info)) {
+      user_info = JSON.parse(COMMON.setAESDecodnig(user_store.info));
+      is_login = true;
     }
 
     return {
-      store,
+      user_store,
       q,
 
+      is_login,
+      user_info,
       model_search,
       slide: ref("style"),
       lorem:
@@ -270,6 +308,10 @@ export default {
   methods: {
     clickMove(path) {
       location.href = "/" + path;
+    },
+    clickLogout() {
+      this.user_store.token.delete();
+      location.href = "/user/login";
     },
   },
 };

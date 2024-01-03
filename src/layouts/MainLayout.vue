@@ -21,11 +21,19 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
+import { useUserStore } from "stores/user";
+import COMMON from "../common/common.js";
 
 export default defineComponent({
   setup() {
-    return {};
+    const user_store = useUserStore();
+    const token = user_store.token;
+
+    // 토큰 만료 check
+    if (!COMMON.isEmpty(token)) {
+      COMMON.checkUserToken(token);
+    }
   },
 });
 </script>

@@ -57,19 +57,19 @@
     <q-item>
       <q-item-section />
       <q-item-section>
-        <q-btn class="join-btn" label="로그인" @click="clickJoin" />
+        <q-btn class="join-btn" label="로그인" @click="clickJoin"/>
       </q-item-section>
       <q-item-section />
     </q-item>
     <q-item>
       <q-item-section />
       <q-item-section>
-        <div class="idpwjoinBtn">
-          <a href="http://"> 아이디찾기</a>
+        <div class="idpwjoin-btn">
+          <a href="/user/findId"> 아이디찾기</a>
           |
           <a href="http://"> 비밀번호찾기</a>
           |
-          <a href="/join"> 회원가입</a>
+          <a href="/user/join"> 회원가입</a>
         </div>
       </q-item-section>
       <q-item-section />
@@ -86,7 +86,7 @@ import { useUserStore } from "stores/user";
 
 export default {
   setup() {
-    const store = useUserStore();
+    const user_store = useUserStore();
     const q = useQuasar();
 
     const is_pwd = ref(true);
@@ -106,7 +106,7 @@ export default {
     var is_login = ref(true);
 
     return {
-      store,
+      user_store,
       q,
 
       is_pwd,
@@ -142,8 +142,8 @@ export default {
           .post(url, formData)
           .then((res) => {
             if (res.data.result == "success") {
-              const token = res.data.data.token;
-              this.store.userToken = token;
+              this.user_store.token = res.data.data.token;
+              this.user_store.info = COMMON.setAESEncodnig(JSON.stringify(res.data.data.userInfo));
 
               location.href = "/";
             } else {

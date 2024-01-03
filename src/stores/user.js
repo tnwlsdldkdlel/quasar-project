@@ -3,6 +3,7 @@ import { useStorage } from "@vueuse/core";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    userToken: useStorage('userToken', null)
+    token: useStorage("user_token", null),
+    info: useStorage("user_info", null)
   })
 });

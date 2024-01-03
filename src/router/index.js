@@ -26,22 +26,5 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
-  // 추가한 부분
-  // const userStore = useUserStore();
-
-  // Router.beforeEach((to, from, next) => { // 페이지를 이동하기 전에 호출되는 함수
-  //   if (to.fullPath !== "/login" && !userStore.isLoggedIn) {
-  //     // /login으로 가고 있지 않고 로그인되어 있지 않으면 /login으로 redirect
-  //     // 로그인하지 않은 상태에서 /를 요청하는 경우 (프로젝트가 처음 실행될 때)
-  //     next("/login");
-  //   } else if (to.fullPath == "/login" && userStore.isLoggedIn) {
-  //     // /login으로 가고 있고 로그인되어 있으면 /으로 redirect
-  //     // 로그인한 상태에서 /login을 요청하는 경우
-  //     next("/");
-  //   } else {
-  //     next();
-  //   }
-  // });
-
   return Router
 })

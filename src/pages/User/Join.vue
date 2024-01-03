@@ -146,7 +146,7 @@ import { useUserStore } from 'stores/user';
 
 export default {
   setup() {
-    const store = useUserStore();
+    const user_store = useUserStore();
     const q = useQuasar();
 
     const is_pwd = ref(true);
@@ -185,7 +185,7 @@ export default {
     });
 
     return {
-      store,
+      user_store,
       q,
 
       options_cell,
@@ -197,7 +197,7 @@ export default {
     };
   },
   methods: {
-    clickJoin() {
+    async clickJoin() {
       const url = "/v1/user/join";
       this.validation = COMMON.CheckJoinVaildation(this.user);
       var validation_flag = true;
@@ -217,12 +217,12 @@ export default {
           formData.append(key, value);
         });
 
-        axios
+        await axios
           .post(url, formData)
           .then((res) => {
             if (res.data.result == "success") {
-              const token = res.data.data.token;
-              this.store.userToken = token;
+              this.user_store.token = res.data.data.token;
+              this.user_store.info = COMMON.setAESEncodnig(JSON.stringify(res.data.data.user_info));
 
               this.q.dialog({
                 title: "회원가입 완료",

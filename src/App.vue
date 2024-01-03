@@ -1,11 +1,13 @@
 <template>
-  <router-view />
+  <component :is="$route.meta.layout || 'div'">
+    <router-view></router-view>
+  </component>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'App'
-})
+  name: "App",
+});
 </script>
