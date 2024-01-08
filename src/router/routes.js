@@ -11,6 +11,7 @@ import FindId from 'pages/User/FindId.vue';
 
 import Blog from 'pages/Blog/Main.vue';
 import MyBlog from 'pages/Blog/My.vue';
+import BlogInfoSetting from 'pages/Blog/Setting/Info.vue'
 
 const routes = [
   {
@@ -22,7 +23,8 @@ const routes = [
       { path: 'user/findId', component: FindId },
 
       { path: 'blog', component: Blog, meta: { layout: BlogLayout } },
-      { path: 'blog/:user_id', component: MyBlog}
+      { path: 'blog/:user_id', component: MyBlog, meta: { layout: MyBlogLayout } },
+      { path: 'blog/:user_id/setting', component: BlogInfoSetting, meta: { layout: MyBlogLayout } }
     ],
   },
 

@@ -5,45 +5,85 @@
     style="padding-left: 10%; padding-right: 10%; padding-top: 3%"
   >
     <header elevated>
-      <!-- 검색 -->
-      <q-item>
-        <q-item-section>
-          <div class="row">
-            <q-select
-              outlined
-              v-model="model_target"
-              :options="options_target"
-            />
-            <q-input
-              outlined
-              bottom-slots
-              v-model="model_search"
-              style="padding-bottom: 0%"
-            >
-              <template v-slot:append>
-                <q-icon
-                  v-if="model_search !== ''"
-                  name="close"
-                  @click="model_search = ''"
-                  class="cursor-pointer"
-                />
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </div>
-        </q-item-section>
-        <q-item-section v-if="is_login">
-          <div class="blog-tab">
+      <!-- 블로그 제목 -->
+      <q-item class="myblog-q-item">
+        <b>{{ blog_info.title }}</b>
+      </q-item>
+      <q-item class="myblog-q-item">
+        <!-- 프로필 -->
+        <div style="width: 28%">
+          <div class="q-pa-m q-gutter-sm">
             <q-img
               src="../../images/default_profile.png"
-              style="max-width: 35px; height: 35px"
+              style="max-width: 60px; height: 60px; float: left"
             />
-            {{ user_info.name }} |
-            <q-btn flat dense round icon="notifications" /> |
-            <q-btn flat dense round icon="mail" /> |
-            <q-btn flat dense round icon="menu" />
+            <div class="q-pa-m q-gutter-sm">
+              <a class="text-black">
+                <b>{{ user_info.name }}</b>
+              </a>
+              <br />
+              <span style="color: gray">{{ user_info.id }}</span>
+              <br />
+              <span
+                >{{ blog_info.profile }}
+                <q-btn
+                  outline
+                  rounded
+                  label="EDIT"
+                  class="text-gray"
+                  size="xs"
+                  @click="clickLogout"
+              /></span>
+              <br />
+              <div style="padding-top: 2%">
+                <div style="cursor: pointer; width: fit-content">
+                  <q-icon name="edit" /><a
+                    class="text-black"
+                    @click="clickBlogWrite"
+                  >
+                    글쓰기
+                  </a>
+                  &nbsp;
+                  <q-icon name="settings" /><a
+                    class="text-black"
+                    @click="clickBlogSetting"
+                  >
+                    관리
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
-        </q-item-section>
+        </div>
+        <!-- 카테고리 -->
+        <div style="width: 30%">
+          <div
+            style="cursor: pointer"
+            @click="clickCategoryExpand"
+            v-if="category_expend"
+          >
+            <b>category</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <q-icon name="expand_less" />
+          </div>
+          <div
+            style="cursor: pointer"
+            @click="clickCategoryExpand"
+            v-if="!category_expend"
+          >
+            <b>category</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <q-icon name="expand_more" />
+          </div>
+          <div style="padding-top: 3%" v-if="category_expend">
+            <div style="padding-bottom: 2%">
+              <q-icon name="article" />
+              전체보기(0)
+            </div>
+            <div v-for="item in category" :key="item">
+              <q-icon name="article" />
+              {{ item }} (0)
+            </div>
+          </div>
+        </div>
       </q-item>
     </header>
 
@@ -59,6 +99,8 @@ import { useUserStore } from "stores/user";
 import { useBlogStore } from "stores/blog";
 import COMMON from "../../common/common.js";
 import { ref } from "vue";
+import { useQuasar } from "quasar";
+import axios from "axios";
 
 export default defineComponent({
   setup() {
@@ -66,18 +108,16 @@ export default defineComponent({
     const blog_store = useBlogStore();
     const token = user_store.token;
 
-    const model_target = ref("글");
-    const options_target = ["글", "블로그", "별명.아이디"];
-    const model_search = ref("");
-    var model_blog_tab = ref("home");
     var user_info = {};
-    var is_login = false;
+    var blog_info = {};
+
+    var category = ref({});
+    const category_expend = ref(true);
 
     // 토큰 만료 check
     if (!COMMON.isEmpty(token)) {
       COMMON.checkUserToken(token);
       user_info = JSON.parse(COMMON.setAESDecodnig(user_store.info));
-      is_login = true;
     } else {
       location.href = "/";
     }
@@ -89,7 +129,6 @@ export default defineComponent({
       // 로그인했으면 블로그 정보 가져오기
       async function getBlogInfo() {
         const url = "/v1/blog/info/" + user_store.token;
-        const q = useQuasar();
 
         await axios.get(url).then((res) => {
           if (res.data.result == "success") {
@@ -101,18 +140,34 @@ export default defineComponent({
       }
     }
 
+    // 가져온 블로그 정보
+    if (!COMMON.isEmpty(blog_store.info) && !COMMON.isEmpty(user_store.info)) {
+      blog_info = JSON.parse(COMMON.setAESDecodnig(blog_store.info));
+      user_info = JSON.parse(COMMON.setAESDecodnig(user_store.info));
+
+      category = ref(blog_info.category);
+    }
+
     return {
-      model_target,
-      options_target,
+      blog_store,
+
       user_info,
-      model_blog_tab,
+      blog_info,
+      category,
+      category_expend,
     };
   },
 
   methods: {
-    clickMove(path) {
-      location.href = "/" + path;
+    clickCategoryExpand() {
+      this.category_expend = this.category_expend == true ? false : true;
     },
+    clickBlogWrite() {
+      location.href = "/blog/" + this.user_info.id + "/write";
+    },
+    clickBlogSetting() {
+      location.href = "/blog/" + this.user_info.id + "/setting";
+    }
   },
 });
 </script>
