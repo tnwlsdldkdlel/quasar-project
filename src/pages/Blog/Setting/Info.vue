@@ -49,8 +49,12 @@
       </q-item-section>
       <q-item-section>
         <div style="width: 68%">
-          <q-img
+          <q-img v-if="model_blog_profile_img == undefined"
             src="../../../images/default_profile.png"
+            style="max-width: 161px; height: 161px"
+          />
+          <q-img v-if="model_blog_profile_img != undefined"
+            :src="model_blog_profile_img"
             style="max-width: 161px; height: 161px"
           />
           <div style="float: right">
@@ -140,14 +144,18 @@ export default {
       user_info = JSON.parse(COMMON.setAESDecodnig(user_store.info));
     }
 
+    console.log(blog_info);
+
     const model_blog_title = ref(blog_info.title);
     const model_user_name = ref(user_info.name);
     const model_blog_profile = ref(blog_info.profile);
     const model_apply_progfile = ref(false);
     const model_dialog = ref(false);
-    const model_blog_profile_img = ref(null);
+    const model_blog_profile_img = ref(blog_info.profileImg);
     const img_error = ref(false);
     const model_dialog_close = ref(true);
+
+    console.log(blog_info.profileImg);
 
     return {
       user_store,
@@ -160,6 +168,7 @@ export default {
       model_blog_profile_img,
       img_error,
       model_dialog_close,
+      blog_info
     };
   },
   methods: {
@@ -178,14 +187,18 @@ export default {
       }
     },
     imgUpload() {
-      const url = "/v1/blog/profile/";
+      const url = "/v1/blog/profile";
       const formData = new FormData();
-      formData.append("blogProfileImg", this.model_blog_profile_img);
-      formData.append("token", this.user_store.token);
+      formData.append("uploadProfileImg", this.model_blog_profile_img);
+      formData.append("seq", this.blog_info.seq);
+      const headers = { "Content-Type": "multipart/form-data" };
 
-      axios.put(url, formData).then((res) => {
+      axios.post(url, formData, headers).then((res) => {
         if (res.data.result == "success") {
-          // 이미지 업로드 후~
+          this.model_dialog = false;
+        } else {
+          this.model_dialog = true;
+          this.img_error = true;
         }
       });
     },

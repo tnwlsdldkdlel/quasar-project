@@ -123,7 +123,7 @@ export default defineComponent({
     }
 
     // 로그인하고, blog info가 로컬스토리지에 없는 경우
-    if (!COMMON.isEmpty(user_store.info) && COMMON.isEmpty(blog_store.info)) {
+    if (COMMON.isEmpty(blog_store.info)) {
       getBlogInfo();
 
       // 로그인했으면 블로그 정보 가져오기
