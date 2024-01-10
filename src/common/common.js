@@ -205,4 +205,76 @@ export default {
 
   },
 
+  CheckBlogInfoVaildation(data) {
+    const keys = Object.keys(data);
+    const result_config = [];
+
+    for (var index in keys) {
+      var result = false;
+      var message = "";
+      var target = null;
+      var key = keys[index];
+
+      console.log(key);
+      switch (key) {
+        case "title":
+          if (this.isEmpty(data[key])) {
+            message = "필수정보입니다.";
+            target = "title";
+          } else {
+            result = true;
+          }
+
+          break;
+        case "name":
+          if (this.isEmpty(data[key])) {
+            message = "필수정보입니다.";
+            target = "name";
+          } else {
+            result = true;
+          }
+
+          break;
+        case "profile":
+          if (this.isEmpty(data[key])) {
+            message = "필수정보입니다.";
+            target = "profile";
+          } else {
+            result = true;
+          }
+          break;
+
+        default:
+          result = true;
+      }
+
+      if (!result) {
+        var config = {
+          message: message,
+          target: target
+        }
+
+        result_config.push(config);
+      }
+
+    }
+
+    return result_config;
+  },
+
+  convertSnakeCaseToCamelCase(value) {
+    const words = value.split('_');
+    const camelCaseWord = words
+      .map((word, index) => {
+        if (index === 0) {
+          return word;
+        }
+        const firstLetterCap = word.charAt(0).toUpperCase();
+        const remainingLetters = word.slice(1);
+        return firstLetterCap + remainingLetters;
+      })
+      .join('');
+
+    return camelCaseWord;
+  }
 }
